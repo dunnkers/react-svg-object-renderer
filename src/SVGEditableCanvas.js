@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { HotKeys } from 'react-hotkeys';
 
 export default class SVGEditableCanvas extends Component {
   static propTypes = {
@@ -170,18 +171,20 @@ export default class SVGEditableCanvas extends Component {
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
 
     return (
-      <svg
-        width={width}
-        height={height}
-        style={styles}
-        onKeyDown={this.keyDown}
-      >
-        {objects.map(this.renderObject)}
+      <HotKeys keyMap={this.map} handlers={this.handlers} focused attach={window}>
+        <svg
+          width={width}
+          height={height}
+          style={styles}
+          onKeyDown={this.keyDown}
+        >
+          {objects.map(this.renderObject)}
 
-        {isHovering && this.renderHoveringObject(currentlyHovering)}
+          {isHovering && this.renderHoveringObject(currentlyHovering)}
 
-        {selectedObjectsArray.map(this.renderSelectedObject)}
-      </svg>
+          {selectedObjectsArray.map(this.renderSelectedObject)}
+        </svg>
+      </HotKeys>
     );
   }
 }
