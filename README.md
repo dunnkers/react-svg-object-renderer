@@ -1,4 +1,4 @@
-# ![Logo](src/logo.svg)
+# ![Logo](public/logo.png)
 
 ## svg-editable-canvas
 > Provides selection and hovering primitives for SVG objects
@@ -54,4 +54,4 @@ export default App;
 
 This renders:
 
-![Example](public/example.PNG)
+![Example](public/example.png)
