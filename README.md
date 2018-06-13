@@ -1,4 +1,4 @@
-<img src="example/public/logo.png">
+<img src="docs/logo.png">
 
 # svg-object-renderer
 
@@ -65,7 +65,7 @@ export default App;
 
 This renders:
 
-![Example](example/public/canvas-example.png)
+![Example](docs/canvas-example.png)
 
 ## Development
 
