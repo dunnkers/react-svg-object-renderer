@@ -2,7 +2,7 @@
   "name": "svg-object-renderer",
   "version": "0.1.0",
   "description": "React NPM library starter kit based on Facebook's create react app",
-  "main": "build/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist"
   },
