@@ -4,21 +4,27 @@
   "description": "React NPM library starter kit based on Facebook's create react app",
   "main": "build/index.js",
   "scripts": {
-    "build": "babel src -d lib"
+    "build": "babel src -d dist"
   },
-  "dependencies": {
+  "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
     "@babel/core": "^7.0.0-beta.51",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.51",
-    "@babel/preset-react": "^7.0.0-beta.51",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.51",
+    "@babel/preset-react": "^7.0.0-beta.51"
+  },
+  "dependencies": {
     "react-hotkeys": "^1.1.4"
   },
   "babel": {
     "plugins": [
-      "@babel/plugin-proposal-class-properties"
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-object-rest-spread"
+    ],
+    "presets": [
+      "@babel/preset-react"
     ]
   },
-  "devDependencies": {},
   "eslintConfig": {
     "extends": "react-app"
   }
