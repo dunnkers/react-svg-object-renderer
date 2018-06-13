@@ -1,13 +1,15 @@
+<img src="example/public/logo.png">
+
 # svg-object-renderer
 
-> SVG rendering, hovering- and selection management for React apps
+> Provides selection and hovering primitives for SVG objects for React apps
 
 [![NPM](https://img.shields.io/npm/v/svg-object-renderer.svg)](https://www.npmjs.com/package/svg-object-renderer) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save svg-object-renderer
+yarn add http://git.offthegrid/Jeroen/svg-object-renderer.git
 ```
 
 ## Usage
@@ -15,17 +17,66 @@ npm install --save svg-object-renderer
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'svg-object-renderer'
+import SVGEditableCanvas, {
+  RectObject, TextObject
+} from 'svg-editable-canvas';
 
-class Example extends Component {
-  render () {
+class App extends Component {
+  objects = [
+    {
+      type: 'rect',
+      x: 50,
+      y: 50,
+      width: 200,
+      height: 200
+    },
+    {
+      type: 'text',
+      x: 75,
+      y: 150,
+      text: 'Hello World 🦄',
+      style: {
+        fill: 'white'
+      }
+    }
+  ]
+
+  objectTypes = {
+    rect: RectObject,
+    text: TextObject
+  }
+
+  render() {
     return (
-      <MyComponent />
-    )
+      <SVGEditableCanvas
+        objects={this.objects}
+        objectTypes={this.objectTypes}
+        onSelectionChange={selectedObjects => {
+          // array of indices from `objects`
+          console.log(selectedObjects);
+        }}
+      />
+    );
   }
 }
+
+export default App;
 ```
 
-## License
+This renders:
 
-MIT © [Jeroen](https://github.com/Jeroen)
+![Example](example/public/canvas-example.png)
+
+## Development
+
+In one terminal:
+```bash
+yarn start
+```
+
+In another terminal:
+```bash
+cd example && yarn start
+```
+
+⚡
