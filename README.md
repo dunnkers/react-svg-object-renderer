@@ -1,7 +1,7 @@
 # <img src="public/logo.png" width="480">
 
 ## svg-editable-canvas
-> Provides selection and hovering primitives for SVG objects
+> Provides selection and hovering primitives for SVG objects in React.js
 
 ```
 yarn add http://git.offthegrid/Jeroen/svg-editable-canvas.git
@@ -12,7 +12,7 @@ yarn add http://git.offthegrid/Jeroen/svg-editable-canvas.git
 ```js
 import SVGEditableCanvas, {
   RectObject, TextObject
-} from './lib/index';
+} from 'svg-editable-canvas';
 
 class App extends Component {
   objects = [
