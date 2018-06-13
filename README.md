@@ -55,3 +55,11 @@ export default App;
 This renders:
 
 ![Example](public/example.png)
+
+### Development
+
+Clone the repo and run:
+
+```shell
+yarn start
+```
