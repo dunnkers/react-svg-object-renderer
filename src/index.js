@@ -1,8 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+/**
+ * @class ExampleComponent
+ */
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+
+import styles from './styles.css'
+
+export default class ExampleComponent extends Component {
+  static propTypes = {
+    text: PropTypes.string
+  }
+
+  render() {
+    const {
+      text
+    } = this.props
+
+    return (
+      <div className={styles.test}>
+        Example Component: {text}
+      </div>
+    )
+  }
+}
