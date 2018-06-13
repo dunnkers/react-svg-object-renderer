@@ -176,7 +176,6 @@ export default class SVGEditableCanvas extends Component {
           width={width}
           height={height}
           style={styles}
-          onKeyDown={this.keyDown}
         >
           {objects.map(this.renderObject)}
 
