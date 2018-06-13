@@ -4,7 +4,7 @@
 
 > Provides selection and hovering primitives for SVG objects for React apps
 
-[![NPM](https://img.shields.io/npm/v/svg-object-renderer.svg)](https://www.npmjs.com/package/svg-object-renderer) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
