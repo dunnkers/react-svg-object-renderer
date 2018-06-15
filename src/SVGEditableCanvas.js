@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { HotKeys } from 'react-hotkeys';
 
+import HoverRect from './HoverRect';
+
 export default class SVGEditableCanvas extends Component {
   static propTypes = {
     width: PropTypes.number,
@@ -28,7 +30,8 @@ export default class SVGEditableCanvas extends Component {
     multiSelect: false
   }
 
-  componentWillMount() {
+  constructor(props) {
+    super(props);
     this.objectRefs = {};
   }
 
@@ -70,7 +73,11 @@ export default class SVGEditableCanvas extends Component {
     * problematic, consider using `target.getBoundingClientRect()` along with
     * $('<svg>').getBoundingClientRect() to correct the x and y offset.
     */
-  getBBox = (index) => this.objectRefs[index].getBBox()
+  getBBox = (index) => {
+    // destruct and construct;  getBBox returns a SVGRect which does not spread.
+    const { x, y, width, height } = this.objectRefs[index].getBBox();
+    return { x, y, width, height };
+  }
 
   handlers = {
     multiSelectOn: () => this.setState({ multiSelect: true }),
@@ -98,45 +105,6 @@ export default class SVGEditableCanvas extends Component {
         onMouseLeave={this.onMouseLeave}
         onFocus={() => { }} // 🔨 disable eslint rule that requires this
       />
-    );
-  }
-
-  renderHoveringObject = (objectIndex) => {
-    if (this.state.selectedObjects.has(objectIndex)) {
-      return;
-    }
-
-    const box = this.getBBox(objectIndex);
-    const offset = 0;
-    const margin = offset * 2;
-    const rect = {
-      x: box.x - offset,
-      y: box.y - offset,
-      width: box.width + margin,
-      height: box.height + margin
-    };
-
-    return (
-      <g>
-        <rect
-          {...rect}
-          style={{
-            stroke: 'white',
-            fill: 'none',
-            strokeWidth: '3px'
-          }}
-        />
-        <rect
-          {...rect}
-          style={{
-            stroke: 'rgb(77, 117, 183)',
-            fill: 'none',
-            strokeWidth: '3px',
-            strokeDasharray: '5,5'
-          }}
-          onMouseLeave={this.onMouseLeave}
-        />
-      </g>
     );
   }
 
@@ -170,6 +138,9 @@ export default class SVGEditableCanvas extends Component {
     const { isHovering, currentlyHovering, selectedObjects } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
 
+    const renderHover = isHovering && 
+      !this.state.selectedObjects.has(currentlyHovering);
+
     return (
       <HotKeys keyMap={this.map} handlers={this.handlers} focused attach={window}>
         <svg
@@ -180,7 +151,12 @@ export default class SVGEditableCanvas extends Component {
         >
           {objects.map(this.renderObject)}
 
-          {isHovering && this.renderHoveringObject(currentlyHovering)}
+          {renderHover && (
+            <HoverRect
+              {...this.getBBox(currentlyHovering)}
+              stopHover={this.onMouseLeave}  
+            />
+          )}
 
           {selectedObjectsArray.map(this.renderSelectedObject)}
         </svg>
