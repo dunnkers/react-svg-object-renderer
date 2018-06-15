@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { HotKeys } from 'react-hotkeys';
 import HoverRect from './HoverRect';
+import SelectRect from './SelectRect';
 export default class SVGEditableCanvas extends Component {
   constructor(props) {
     super(props);
@@ -109,28 +110,6 @@ export default class SVGEditableCanvas extends Component {
       }));
     });
 
-    _defineProperty(this, "renderSelectedObject", (objectIndex, index) => {
-      const {
-        x,
-        y,
-        width,
-        height
-      } = this.getBBox(objectIndex);
-      return React.createElement("rect", {
-        x: x,
-        y: y,
-        width: width,
-        height: height,
-        style: {
-          stroke: '#4285f4',
-          fill: 'none',
-          strokeWidth: '3px'
-        },
-        onMouseDown: event => this.onMouseDown(objectIndex, event),
-        key: index
-      });
-    });
-
     this.objectRefs = {};
   }
 
@@ -160,7 +139,10 @@ export default class SVGEditableCanvas extends Component {
       onKeyDown: this.keyDown
     }, objects.map(this.renderObject), renderHover && React.createElement(HoverRect, _extends({}, this.getBBox(currentlyHovering), {
       stopHover: this.onMouseLeave
-    })), selectedObjectsArray.map(this.renderSelectedObject)));
+    })), selectedObjectsArray.map((objectIndex, index) => React.createElement(SelectRect, _extends({}, this.getBBox(objectIndex), {
+      key: index,
+      select: event => this.onMouseDown(objectIndex, event)
+    })))));
   }
 
 }

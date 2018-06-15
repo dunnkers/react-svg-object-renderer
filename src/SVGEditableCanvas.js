@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { HotKeys } from 'react-hotkeys';
 
 import HoverRect from './HoverRect';
+import SelectRect from './SelectRect';
 
 export default class SVGEditableCanvas extends Component {
   static propTypes = {
@@ -108,31 +109,6 @@ export default class SVGEditableCanvas extends Component {
     );
   }
 
-  renderSelectedObject = (objectIndex, index) => {
-    const {
-      x,
-      y,
-      width,
-      height
-    } = this.getBBox(objectIndex);
-
-    return (
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          stroke: '#4285f4',
-          fill: 'none',
-          strokeWidth: '3px'
-        }}
-        onMouseDown={(event) => this.onMouseDown(objectIndex, event)}
-        key={index}
-      />
-    );
-  }
-
   render() {
     const { width, height, objects } = this.props;
     const { isHovering, currentlyHovering, selectedObjects } = this.state;
@@ -158,7 +134,13 @@ export default class SVGEditableCanvas extends Component {
             />
           )}
 
-          {selectedObjectsArray.map(this.renderSelectedObject)}
+          {selectedObjectsArray.map((objectIndex, index) => (
+            <SelectRect
+              {...this.getBBox(objectIndex)}
+              key={index}
+              select={(event) => this.onMouseDown(objectIndex, event)}
+            />
+          ))}
         </svg>
       </HotKeys>
     );
