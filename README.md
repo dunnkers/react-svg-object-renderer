@@ -12,6 +12,13 @@
 yarn add http://git.offthegrid/Jeroen/svg-object-renderer.git
 ```
 
+## Features
+
+- Multiselect
+    - Use CTRL and click to multiselet
+    - Only allows multi-selections of one type
+- Hover feedback
+
 ## Usage
 
 ```jsx
