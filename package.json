@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src -d dist --source-maps",
-    "watch": "babel src --watch -d dist --source-maps"
+    "watch": "babel src --watch -d dist --source-maps inline"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",

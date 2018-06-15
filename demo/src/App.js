@@ -13,15 +13,40 @@ class App extends Component {
       x: 50,
       y: 50,
       width: 200,
-      height: 200
+      height: 200,
+      style: {
+        fill: 'white',
+        stroke: 'black'
+      }
+    },
+    {
+      type: 'rect',
+      x: 200,
+      y: 200,
+      width: 100,
+      height: 100,
+      style: {
+        fill: 'beige',
+        stroke: 'black'
+      }
     },
     {
       type: 'text',
-      x: 75,
-      y: 150,
-      text: 'Hello World 🦄',
+      x: 90,
+      y: 155,
+      text: 'a piece of text',
       style: {
-        fill: 'white'
+        fill: 'black'
+      }
+    },
+    {
+      type: 'text',
+      x: 220,
+      y: 255,
+      text: 'another one!',
+      style: {
+        fill: 'black',
+        fontSize: 11
       }
     }
   ]

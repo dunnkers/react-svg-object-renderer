@@ -5,7 +5,7 @@ import { HotKeys } from 'react-hotkeys';
 import HoverRect from './HoverRect';
 import SelectRect from './SelectRect';
 
-export default class SVGEditableCanvas extends Component {
+export default class SVGObjectRenderer extends Component {
   static propTypes = {
     width: PropTypes.number,
     height: PropTypes.number,
@@ -44,28 +44,14 @@ export default class SVGEditableCanvas extends Component {
   onMouseLeave = () => this.setState({ isHovering: false })
 
   onMouseDown = (index, event) => {
-    event.preventDefault();
-    const { selectedObjects } = this.state;
+    event.preventDefault(); // 💡 Prevents user selecting any svg text
 
-    if (selectedObjects.has(index)) {
-      if (!this.state.multiSelect && selectedObjects.size > 1) {
-        selectedObjects.clear();
-        selectedObjects.add(index);
-      } else {
-        selectedObjects.delete(index); // de-select
-      }
-    } else {
-      if (!this.state.multiSelect) {
-        selectedObjects.clear();
-      }
-
-      selectedObjects.add(index); // select
-    }
-
-    this.setState({ selectedObjects });
+    this.setState({
+      selectedObjects: this.computeSelection(index)
+    });
 
     // notify outside world of selection change. convert set to array.
-    this.props.onSelectionChange(Array.from(selectedObjects));
+    this.props.onSelectionChange(Array.from(this.state.selectedObjects));
   }
 
   /* ⚠
@@ -104,9 +90,31 @@ export default class SVGEditableCanvas extends Component {
         onMouseOver={() => this.onMouseOver(index)}
         onMouseDown={event => this.onMouseDown(index, event)}
         onMouseLeave={this.onMouseLeave}
-        onFocus={() => { }} // 🔨 disable eslint rule that requires this
       />
     );
+  }
+
+  multiSelect(index, objects) {
+    if (objects.has(index)) {
+      objects.delete(index);
+      return objects;
+    } else {
+      return objects.add(index);
+    }
+  }
+
+  singleSelect(index, objects) {
+    const hasSelection = objects.has(index);
+    objects.clear();
+    return hasSelection ? objects : objects.add(index);
+  }
+
+  computeSelection(index) {
+    if (this.state.multiSelect) {
+      return this.multiSelect(index, this.state.selectedObjects);
+    } else {
+      return this.singleSelect(index, this.state.selectedObjects);
+    }
   }
 
   render() {
@@ -119,12 +127,7 @@ export default class SVGEditableCanvas extends Component {
 
     return (
       <HotKeys keyMap={this.map} handlers={this.handlers} focused attach={window}>
-        <svg
-          width={width}
-          height={height}
-          style={styles}
-          onKeyDown={this.keyDown}
-        >
+        <svg width={width} height={height} style={styles} >
           {objects.map(this.renderObject)}
 
           {renderHover && (
