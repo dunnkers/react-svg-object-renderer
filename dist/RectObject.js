@@ -50,3 +50,4 @@ _defineProperty(RectObject, "defaultProps", {
   height: 50,
   style: {}
 });
+//# sourceMappingURL=RectObject.js.map

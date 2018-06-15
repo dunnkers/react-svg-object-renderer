@@ -5,9 +5,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { HotKeys } from 'react-hotkeys';
+import HoverRect from './HoverRect';
 export default class SVGEditableCanvas extends Component {
-  constructor(...args) {
-    super(...args);
+  constructor(props) {
+    super(props);
 
     _defineProperty(this, "state", {
       isHovering: false,
@@ -53,7 +54,21 @@ export default class SVGEditableCanvas extends Component {
       this.props.onSelectionChange(Array.from(selectedObjects));
     });
 
-    _defineProperty(this, "getBBox", index => this.objectRefs[index].getBBox());
+    _defineProperty(this, "getBBox", index => {
+      // destruct and construct;  getBBox returns a SVGRect which does not spread.
+      const {
+        x,
+        y,
+        width,
+        height
+      } = this.objectRefs[index].getBBox();
+      return {
+        x,
+        y,
+        width,
+        height
+      };
+    });
 
     _defineProperty(this, "handlers", {
       multiSelectOn: () => this.setState({
@@ -94,37 +109,6 @@ export default class SVGEditableCanvas extends Component {
       }));
     });
 
-    _defineProperty(this, "renderHoveringObject", objectIndex => {
-      if (this.state.selectedObjects.has(objectIndex)) {
-        return;
-      }
-
-      const box = this.getBBox(objectIndex);
-      const offset = 0;
-      const margin = offset * 2;
-      const rect = {
-        x: box.x - offset,
-        y: box.y - offset,
-        width: box.width + margin,
-        height: box.height + margin
-      };
-      return React.createElement("g", null, React.createElement("rect", _extends({}, rect, {
-        style: {
-          stroke: 'white',
-          fill: 'none',
-          strokeWidth: '3px'
-        }
-      })), React.createElement("rect", _extends({}, rect, {
-        style: {
-          stroke: 'rgb(77, 117, 183)',
-          fill: 'none',
-          strokeWidth: '3px',
-          strokeDasharray: '5,5'
-        },
-        onMouseLeave: this.onMouseLeave
-      })));
-    });
-
     _defineProperty(this, "renderSelectedObject", (objectIndex, index) => {
       const {
         x,
@@ -146,9 +130,7 @@ export default class SVGEditableCanvas extends Component {
         key: index
       });
     });
-  }
 
-  componentWillMount() {
     this.objectRefs = {};
   }
 
@@ -165,6 +147,7 @@ export default class SVGEditableCanvas extends Component {
     } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
 
+    const renderHover = isHovering && !this.state.selectedObjects.has(currentlyHovering);
     return React.createElement(HotKeys, {
       keyMap: this.map,
       handlers: this.handlers,
@@ -175,7 +158,9 @@ export default class SVGEditableCanvas extends Component {
       height: height,
       style: styles,
       onKeyDown: this.keyDown
-    }, objects.map(this.renderObject), isHovering && this.renderHoveringObject(currentlyHovering), selectedObjectsArray.map(this.renderSelectedObject)));
+    }, objects.map(this.renderObject), renderHover && React.createElement(HoverRect, _extends({}, this.getBBox(currentlyHovering), {
+      stopHover: this.onMouseLeave
+    })), selectedObjectsArray.map(this.renderSelectedObject)));
   }
 
 }
@@ -202,3 +187,4 @@ export const styles = {
   backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5' + 'vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0' + 'PSIyMCIgZmlsbD0iI2ZmZiI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9I' + 'iNGN0Y3RjciPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIG' + 'ZpbGw9IiNGN0Y3RjciPjwvcmVjdD4KPC9zdmc+)',
   backgroundSize: 'auto'
 };
+//# sourceMappingURL=SVGEditableCanvas.js.map

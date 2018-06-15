@@ -37,3 +37,4 @@ _defineProperty(TextObject, "defaultProps", {
   style: {},
   text: ''
 });
+//# sourceMappingURL=TextObject.js.map
