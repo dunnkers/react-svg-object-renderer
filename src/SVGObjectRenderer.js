@@ -28,7 +28,8 @@ export default class SVGObjectRenderer extends Component {
     isHovering: false,
     currentlyHovering: null,
     selectedObjects: new Set(),
-    multiSelect: false
+    multiSelect: false,
+    selectedType: null
   }
 
   constructor(props) {
@@ -36,10 +37,9 @@ export default class SVGObjectRenderer extends Component {
     this.objectRefs = {};
   }
 
-  onMouseOver = (index) => this.setState({
-    isHovering: true,
-    currentlyHovering: index
-  });
+  onMouseOver = (index) => {
+    this.setState({ isHovering: true, currentlyHovering: index });
+  }
 
   onMouseLeave = () => this.setState({ isHovering: false })
 
@@ -76,6 +76,25 @@ export default class SVGObjectRenderer extends Component {
     multiSelectOff: { sequence: 'ctrl', action: 'keyup' }
   };
 
+  isSelectedType = (index) =>
+    this.props.objects[index].type === this.state.selectedType;
+
+  shouldRenderHover = (index) => {
+    const { isHovering, selectedObjects, multiSelect } = this.state;
+
+    // don't render when object already selected
+    if (!isHovering || selectedObjects.has(index)) {
+      return false;
+    }
+    
+    // don't render when selecting objects of same type
+    if (selectedObjects.size > 0 && multiSelect) {
+      return this.isSelectedType(index);
+    }
+
+    return true;
+  }
+
   renderObject = (object, index) => {
     const { objectTypes } = this.props;
     const ObjectComponent = objectTypes[object.type];
@@ -95,35 +114,44 @@ export default class SVGObjectRenderer extends Component {
   }
 
   multiSelect(index, objects) {
-    if (objects.has(index)) {
+    if (objects.has(index)) { // remove from selection
       objects.delete(index);
       return objects;
-    } else {
-      return objects.add(index);
+    } else { // add to selection
+      // possibly, dissalow selecting another type
+      const sameType = this.isSelectedType(index);
+      return sameType ? objects.add(index) : objects;
     }
   }
 
   singleSelect(index, objects) {
-    const hasSelection = objects.has(index);
-    objects.clear();
-    return hasSelection ? objects : objects.add(index);
+    if (objects.has(index)) { // deselect
+      objects.clear();
+      return objects;
+    } else { // select
+      objects.clear();
+      this.setState({
+        selectedType: this.props.objects[index].type
+      });
+      return objects.add(index);
+    }
   }
 
   computeSelection(index) {
-    if (this.state.multiSelect) {
-      return this.multiSelect(index, this.state.selectedObjects);
+    const { selectedObjects, multiSelect } = this.state;
+
+    if (multiSelect && selectedObjects.size > 0) {
+      return this.multiSelect(index, selectedObjects);
     } else {
-      return this.singleSelect(index, this.state.selectedObjects);
+      return this.singleSelect(index, selectedObjects);
     }
   }
 
   render() {
     const { width, height, objects } = this.props;
-    const { isHovering, currentlyHovering, selectedObjects } = this.state;
+    const { currentlyHovering, selectedObjects } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
-
-    const renderHover = isHovering && 
-      !this.state.selectedObjects.has(currentlyHovering);
+    const renderHover = this.shouldRenderHover(currentlyHovering);
 
     return (
       <HotKeys keyMap={this.map} handlers={this.handlers} focused attach={window}>
