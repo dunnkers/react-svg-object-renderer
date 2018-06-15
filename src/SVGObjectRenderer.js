@@ -13,7 +13,8 @@ export default class SVGObjectRenderer extends Component {
       type: PropTypes.string.isRequired
     })),
     objectTypes: PropTypes.objectOf(PropTypes.func),
-    onSelectionChange: PropTypes.func
+    onSelectionChange: PropTypes.func,
+    multipleTypeSelection: PropTypes.bool
   }
 
   static defaultProps = {
@@ -21,7 +22,8 @@ export default class SVGObjectRenderer extends Component {
     height: 400,
     objects: [],
     objectTypes: {},
-    onSelectionChange: () => {}
+    onSelectionChange: () => {},
+    multipleTypeSelection: false
   }
 
   state = {
@@ -81,6 +83,7 @@ export default class SVGObjectRenderer extends Component {
 
   shouldRenderHover = (index) => {
     const { isHovering, selectedObjects, multiSelect } = this.state;
+    const { multipleTypeSelection } = this.props;
 
     // don't render when object already selected
     if (!isHovering || selectedObjects.has(index)) {
@@ -89,7 +92,7 @@ export default class SVGObjectRenderer extends Component {
     
     // don't render when selecting objects of same type
     if (selectedObjects.size > 0 && multiSelect) {
-      return this.isSelectedType(index);
+      return this.isSelectedType(index) || multipleTypeSelection;
     }
 
     return true;
@@ -119,7 +122,8 @@ export default class SVGObjectRenderer extends Component {
       return objects;
     } else { // add to selection
       // possibly, dissalow selecting another type
-      const sameType = this.isSelectedType(index);
+      const { multipleTypeSelection } = this.props;
+      const sameType = this.isSelectedType(index) || multipleTypeSelection;
       return sameType ? objects.add(index) : objects;
     }
   }

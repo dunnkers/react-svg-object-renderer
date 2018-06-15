@@ -74,16 +74,27 @@ This renders:
 
 ![Example](docs/canvas-example.png)
 
-## Development
+## Options
 
-In one terminal:
-```bash
-yarn start
+*multipleTypeSelection*
+> default: `false`
+
+Allows selecting objects of different types. Default behaviour is disallowing selecting multiple different types.
+
+```jsx
+<SVGEditableCanvas multipleTypeSelection={true} />
 ```
 
-In another terminal:
+## Development
+
+In one terminal build the library files:
 ```bash
-cd example && yarn start
+yarn watch
+```
+
+Launch the demo app in another terminal:
+```bash
+cd demo && yarn start
 ```
 
 ⚡
