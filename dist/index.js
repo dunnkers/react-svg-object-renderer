@@ -1,4 +1,4 @@
 export { default } from './SVGObjectRenderer';
 export { default as RectObject } from './RectObject';
 export { default as TextObject } from './TextObject';
-//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9pbmRleC5qcyJdLCJuYW1lcyI6WyJkZWZhdWx0IiwiUmVjdE9iamVjdCIsIlRleHRPYmplY3QiXSwibWFwcGluZ3MiOiJBQUFBLFNBQVNBLE9BQVQsUUFBd0IscUJBQXhCO0FBQ0EsU0FBU0EsV0FBV0MsVUFBcEIsUUFBc0MsY0FBdEM7QUFDQSxTQUFTRCxXQUFXRSxVQUFwQixRQUFzQyxjQUF0QyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB7IGRlZmF1bHQgfSBmcm9tICcuL1NWR09iamVjdFJlbmRlcmVyJ1xyXG5leHBvcnQgeyBkZWZhdWx0IGFzIFJlY3RPYmplY3QgfSBmcm9tICcuL1JlY3RPYmplY3QnXHJcbmV4cG9ydCB7IGRlZmF1bHQgYXMgVGV4dE9iamVjdCB9IGZyb20gJy4vVGV4dE9iamVjdCciXX0=
+//# sourceMappingURL=index.js.map

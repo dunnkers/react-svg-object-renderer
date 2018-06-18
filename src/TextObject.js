@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 export default class TextObject extends Component {
   static propTypes = {
+    x: PropTypes.number,
+    y: PropTypes.number,
     style: PropTypes.shape({
       fill: PropTypes.string,
       stroke: PropTypes.string
@@ -12,6 +14,8 @@ export default class TextObject extends Component {
   }
 
   static defaultProps = {
+    x: 0,
+    y: 0,
     style: {},
     text: ''
   }
