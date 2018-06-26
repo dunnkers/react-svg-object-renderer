@@ -1,3 +1,3 @@
-export { default } from './SVGObjectRenderer'
-export { default as RectObject } from './RectObject'
-export { default as TextObject } from './TextObject'
+export { default } from './lib/SVGObjectRenderer'
+export { default as RectObject } from './objects/RectObject'
+export { default as TextObject } from './objects/TextObject'
