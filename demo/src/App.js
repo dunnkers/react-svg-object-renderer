@@ -67,6 +67,7 @@ class App extends Component {
           <SVGObjectRenderer
             objects={this.objects}
             objectTypes={this.objectTypes}
+            onSelectionChange={() => console.log('selection changed')}
           />
         </div>
       </div>

@@ -52,7 +52,7 @@ export default class SVGObjectRenderer extends Component {
       selectedObjects: this.computeSelection(index)
     });
 
-    // notify outside world of selection change. convert set to array.
+    // ⚡ notify outside world of selection change. convert set to array.
     this.props.onSelectionChange(Array.from(this.state.selectedObjects));
   }
 
@@ -96,6 +96,26 @@ export default class SVGObjectRenderer extends Component {
     }
 
     return true;
+  }
+
+  renderSurface = () => {
+    return (
+      <rect
+        opacity="0.0"
+        width="100%"
+        height="100%"
+        onMouseDown={(event) => {
+          event.preventDefault();
+          
+          this.setState({
+            selectedObjects: new Set()
+          });
+
+          // ⚡ notify outside world of selection change. convert set to array.
+          this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+        }}
+      />
+    );
   }
 
   renderObject = (object, index) => {
@@ -160,6 +180,8 @@ export default class SVGObjectRenderer extends Component {
     return (
       <HotKeys keyMap={this.map} handlers={this.handlers} focused attach={window}>
         <svg width={width} height={height} style={styles} >
+          {this.renderSurface()}
+
           {objects.map(this.renderObject)}
 
           {renderHover && (
