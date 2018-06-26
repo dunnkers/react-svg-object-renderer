@@ -1,9 +1,10 @@
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import { HotKeys } from 'react-hotkeys';
 
 import HoverRect from './HoverRect';
 import SelectRect from './SelectRect';
+import DragRect from './DragRect';
+import HotKeyProvider from './HotKeyProvider';
 
 export default class SVGObjectRenderer extends Component {
   static propTypes = {
@@ -82,16 +83,6 @@ export default class SVGObjectRenderer extends Component {
     return { x, y, width, height };
   }
 
-  handlers = {
-    multiSelectOn: () => this.setState({ multiSelect: true }),
-    multiSelectOff: () => this.setState({ multiSelect: false })
-  };
-
-  map = {
-    multiSelectOn: { sequence: 'ctrl', action: 'keydown' },
-    multiSelectOff: { sequence: 'ctrl', action: 'keyup' }
-  };
-
   isSelectedType = (index) =>
     this.props.objects[index].type === this.state.selectedType;
 
@@ -147,20 +138,6 @@ export default class SVGObjectRenderer extends Component {
         onMouseOver={() => this.onMouseOver(index)}
         onMouseDown={event => this.onMouseDown(index, event)}
         onMouseLeave={this.onMouseLeave}
-      />
-    );
-  }
-
-  renderDragRect = () => {
-    return (
-      <rect
-        {...this.state.dragRect}
-        fill="none"
-        style={{
-          stroke: '#4285f4',
-          fill: 'none',
-          strokeWidth: '2px'
-        }}
       />
     );
   }
@@ -280,19 +257,10 @@ export default class SVGObjectRenderer extends Component {
     const { currentlyHovering, selectedObjects, dragging } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
     const renderHover = this.shouldRenderHover(currentlyHovering);
-    const hotKeyStyle = {
-      width,
-      outline: 0
-    };
 
     return (
-      <HotKeys
-        style={hotKeyStyle}
-        keyMap={this.map}
-        handlers={this.handlers}
-        focused
-        attach={window}
-        onMouseDown={(evt) => evt.preventDefault()}
+      <HotKeyProvider width={width}
+        setMultiSelect={multiSelect => this.setState({ multiSelect })}
       >
         <svg
           ref={this.svgRef}
@@ -322,9 +290,9 @@ export default class SVGObjectRenderer extends Component {
             />
           ))}
 
-          {dragging && this.renderDragRect()}
+          {dragging && <DragRect {...this.state.dragRect} />}
         </svg>
-      </HotKeys>
+      </HotKeyProvider>
     );
   }
 }
