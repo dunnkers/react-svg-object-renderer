@@ -39,7 +39,7 @@ export default class SVGObjectRenderer extends Component {
 
   constructor(props) {
     super(props);
-    this.objectRefs = {};
+    this.objectRefs = Object.entries(props.objects).map(() => createRef());
     this.svgRef = createRef();
   }
 
@@ -68,7 +68,7 @@ export default class SVGObjectRenderer extends Component {
     */
   getBBox = (index) => {
     // destruct and construct;  getBBox returns a SVGRect which does not spread.
-    const { x, y, width, height } = this.objectRefs[index].getBBox();
+    const { x, y, width, height } = this.objectRefs[index].current.getBBox();
     return { x, y, width, height };
   }
 
@@ -129,9 +129,7 @@ export default class SVGObjectRenderer extends Component {
       <ObjectComponent
         {...object}
         key={index}
-        refCallback={ref => {
-          this.objectRefs[index] = ref;
-        }} // 💡 We should use `createRef` from React ^v16.x onwards instead.
+        nodeRef={this.objectRefs[index]}
         onMouseOver={() => this.onMouseOver(index)}
         onMouseDown={event => this.onMouseDown(index, event)}
         onMouseLeave={this.onMouseLeave}

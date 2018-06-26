@@ -10,7 +10,7 @@ export default class TextObject extends Component {
       stroke: PropTypes.string
     }),
     text: PropTypes.string,
-    refCallback: PropTypes.func.isRequired
+    nodeRef: PropTypes.any.isRequired
   }
 
   static defaultProps = {
@@ -24,13 +24,13 @@ export default class TextObject extends Component {
     const {
       style,
       text,
-      refCallback,
+      nodeRef,
       ...otherProps
     } = this.props;
     delete style.stroke; // ignore stroke, only use fill.
 
     return (
-      <text style={style} ref={refCallback} {...otherProps}>
+      <text style={style} ref={nodeRef} {...otherProps}>
         {text}
       </text>
     );

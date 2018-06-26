@@ -11,7 +11,7 @@ export default class RectObject extends Component {
       fill: PropTypes.string,
       stroke: PropTypes.string
     }),
-    refCallback: PropTypes.func.isRequired
+    nodeRef: PropTypes.any.isRequired
   }
 
   static defaultProps = {
@@ -29,7 +29,7 @@ export default class RectObject extends Component {
       width,
       height,
       style,
-      refCallback,
+      nodeRef,
       ...otherProps
     } = this.props;
 
@@ -40,7 +40,7 @@ export default class RectObject extends Component {
         width={width}
         height={height}
         style={style}
-        ref={refCallback}
+        ref={nodeRef}
         {...otherProps}
       />
     );
