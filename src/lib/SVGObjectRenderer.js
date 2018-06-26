@@ -1,11 +1,11 @@
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
-import HoverRect from './HoverRect';
-import SelectRect from './SelectRect';
-import DragRect from './DragRect';
+import HoverRect from './indicators/HoverRect';
+import SelectRect from './indicators/SelectRect';
 import Surface from './Surface';
 import HotKeyProvider from './HotKeyProvider';
+import SVGRoot from './SVGRoot';
 
 export default class SVGObjectRenderer extends Component {
   static propTypes = {
@@ -33,16 +33,12 @@ export default class SVGObjectRenderer extends Component {
     currentlyHovering: null,
     selectedObjects: new Set(),
     multiSelect: false,
-    selectedType: null,
-    dragging: false,
-    dragOrigin: { x: 0, y: 0 },
-    dragRect: { x: 0, y: 0, width: 0, height: 0 }
+    selectedType: null
   }
 
   constructor(props) {
     super(props);
     this.objectRefs = Object.entries(props.objects).map(() => createRef());
-    this.svgRef = createRef();
   }
 
   onMouseOver = (index) => {
@@ -155,84 +151,9 @@ export default class SVGObjectRenderer extends Component {
     }
   }
 
-  startDrag = (event) => {
-    this.setState({
-      dragInitiated: true,
-      dragOrigin: this.computeCoordinates(event)
-    });
-  }
-
-  handleDrag = (event) => {
-    const { dragInitiated, dragOrigin } = this.state;
-    let { dragging } = this.state;
-
-    if (dragInitiated && !dragging) {
-      dragging = true;
-    }
-
-    if (dragging) {
-      const current = this.computeCoordinates(event);
-      this.setState({
-        dragging: true,
-        dragRect: {
-          x: Math.min(current.x, dragOrigin.x),
-          y: Math.min(current.y, dragOrigin.y),
-          width: Math.abs(current.x - dragOrigin.x),
-          height: Math.abs(current.y - dragOrigin.y)
-        }
-      });
-    }
-  }
-
-  overlaps(a, b, x, y) {
-    return Math.max(a, x) < Math.min(b, y);
-  }
-
-  boxOverlap(a, b) {
-    return this.overlaps(a.left, a.right, b.left, b.right) && 
-           this.overlaps(a.top, a.bottom, b.top, b.bottom)
-  }
-
-  rectToBox = (rect) => {
-    return {
-      left: rect.x,
-      right: rect.x + rect.width,
-      top: rect.y,
-      bottom: rect.y + rect.height
-    };
-  }
-
-  stopDrag = (event) => {
-    if (this.state.dragging) {
-      const indices = this.props.objects.map((object, index) => index);
-      const toSelect = indices.filter(index => {
-        return this.boxOverlap(
-          this.rectToBox(this.state.dragRect),
-          this.rectToBox(this.getBBox(index))
-        );
-      });
-      this.selectObjects(toSelect);
-    } 
-
-    this.setState({
-      dragging: false,
-      dragInitiated: false,
-      dragRect: { x: 0, y: 0, width: 0, height: 0 }
-    });
-  }
-
-  computeCoordinates(mouseEvent) {
-    const dim = this.svgRef.current.getBoundingClientRect();
-
-    return {
-      x: mouseEvent.clientX - dim.left,
-      y: mouseEvent.clientY - dim.top
-    }
-  }
-
   render() {
     const { width, height, objects } = this.props;
-    const { currentlyHovering, selectedObjects, dragging } = this.state;
+    const { currentlyHovering, selectedObjects } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
     const renderHover = this.shouldRenderHover(currentlyHovering);
 
@@ -240,15 +161,7 @@ export default class SVGObjectRenderer extends Component {
       <HotKeyProvider width={width}
         setMultiSelect={multiSelect => this.setState({ multiSelect })}
       >
-        <svg
-          ref={this.svgRef}
-          width={width}
-          height={height}
-          style={styles}
-          onMouseDown={this.startDrag}
-          onMouseMove={this.handleDrag}
-          onMouseUp={this.stopDrag}
-        >
+        <SVGRoot width={width} height={height}>
           <Surface deselectAll={() => {
             if (this.state.selectedObjects.size > 0) {
               this.setState({
@@ -262,7 +175,7 @@ export default class SVGObjectRenderer extends Component {
 
           {objects.map(this.renderObject)}
 
-          {renderHover && !dragging && (
+          {renderHover && (
             <HoverRect
               {...this.getBBox(currentlyHovering)}
               stopHover={this.onMouseLeave}  
@@ -276,19 +189,9 @@ export default class SVGObjectRenderer extends Component {
               select={(event) => this.onMouseDown(objectIndex, event)}
             />
           ))}
-
-          {dragging && <DragRect {...this.state.dragRect} />}
-        </svg>
+        </SVGRoot>
       </HotKeyProvider>
     );
   }
 }
 
-export const styles = {
-  backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5'
-    + 'vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0'
-    + 'PSIyMCIgZmlsbD0iI2ZmZiI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9I'
-    + 'iNGN0Y3RjciPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIG'
-    + 'ZpbGw9IiNGN0Y3RjciPjwvcmVjdD4KPC9zdmc+)',
-  backgroundSize: 'auto'
-};
