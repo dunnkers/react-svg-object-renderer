@@ -49,6 +49,14 @@ export default class SVGObjectRenderer extends Component {
 
   onMouseLeave = () => this.setState({ isHovering: false })
 
+  selectObjects = indexes => {
+    this.state.selectedObjects.clear();
+    this.setState({ selectedObjects: new Set(indexes) });
+
+    // ⚡ notify outside world of selection change. convert set to array.
+    this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+  }
+
   onMouseDown = (index, event) => {
     event.preventDefault(); // 💡 Prevents user selecting any svg text
 
@@ -208,7 +216,35 @@ export default class SVGObjectRenderer extends Component {
     }
   }
 
+  overlaps(a, b, x, y) {
+    return Math.max(a, x) < Math.min(b, y);
+  }
+
+  boxOverlap(a, b) {
+    return this.overlaps(a.left, a.right, b.left, b.right) && 
+           this.overlaps(a.top, a.bottom, b.top, b.bottom)
+  }
+
+  rectToBox = (rect) => {
+    return {
+      left: rect.x,
+      right: rect.x + rect.width,
+      top: rect.y,
+      bottom: rect.y + rect.height
+    };
+  }
+
   stopDrag = (event) => {
+    const { dragRect } = this.state;
+    const indices = this.props.objects.map((object, index) => index);
+    const toSelect = indices.filter(index => {
+      return this.boxOverlap(
+        this.rectToBox(dragRect),
+        this.rectToBox(this.getBBox(index))
+      );
+    });
+    this.selectObjects(toSelect);
+
     this.setState({
       dragging: false,
       dragRect: { x: 0, y: 0, width: 0, height: 0 }
@@ -223,6 +259,15 @@ export default class SVGObjectRenderer extends Component {
       y: mouseEvent.clientY - dim.top
     }
   }
+
+  // offsetCoordinateSpace(ref) {
+
+
+  //   return {
+  //     x: mouseEvent.clientX - dim.left,
+  //     y: mouseEvent.clientY - dim.top
+  //   }
+  // }
 
   render() {
     const { width, height, objects } = this.props;
