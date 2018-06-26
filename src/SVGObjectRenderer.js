@@ -260,15 +260,6 @@ export default class SVGObjectRenderer extends Component {
     }
   }
 
-  // offsetCoordinateSpace(ref) {
-
-
-  //   return {
-  //     x: mouseEvent.clientX - dim.left,
-  //     y: mouseEvent.clientY - dim.top
-  //   }
-  // }
-
   render() {
     const { width, height, objects } = this.props;
     const { currentlyHovering, selectedObjects, dragging } = this.state;
