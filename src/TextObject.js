@@ -27,6 +27,7 @@ export default class TextObject extends Component {
       refCallback,
       ...otherProps
     } = this.props;
+    delete style.stroke; // ignore stroke, only use fill.
 
     return (
       <text style={style} ref={refCallback} {...otherProps}>
