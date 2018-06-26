@@ -5,11 +5,13 @@ import { HotKeys } from 'react-hotkeys';
 export default class HotKeyProvider extends Component {
   static propTypes = {
     width: PropTypes.number,
+    height: PropTypes.number,
     setMultiSelect: PropTypes.func.isRequired
   }
 
   static defaultProps = {
-    width: ''
+    width: '',
+    height: ''
   }
 
   handlers = {
@@ -23,9 +25,10 @@ export default class HotKeyProvider extends Component {
   };
 
   render() {
-    const { width } = this.props;
+    const { width, height } = this.props;
     const hotKeyStyle = {
       width,
+      height,
       outline: 0
     };
 

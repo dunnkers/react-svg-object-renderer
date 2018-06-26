@@ -2,11 +2,13 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import DragRect from './indicators/DragRect';
+import { getBBox } from './Common';
 
 export default class SVGRoot extends Component {
   static propTypes = {
     width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired
+    height: PropTypes.number.isRequired,
+    selectables: PropTypes.arrayOf(PropTypes.object)
   }
 
   state = {
@@ -26,6 +28,33 @@ export default class SVGRoot extends Component {
   constructor(props) {
     super(props);
     this.svgRef = createRef();
+  }
+
+  overlaps(a, b, x, y) {
+    return Math.max(a, x) < Math.min(b, y);
+  }
+
+  boxOverlap(a, b) {
+    return this.overlaps(a.left, a.right, b.left, b.right) &&
+      this.overlaps(a.top, a.bottom, b.top, b.bottom)
+  }
+
+  rectToBox = rect => {
+    return {
+      left: rect.x,
+      right: rect.x + rect.width,
+      top: rect.y,
+      bottom: rect.y + rect.height
+    };
+  }
+
+  computeCoordinates(mouseEvent) {
+    const dim = this.svgRef.current.getBoundingClientRect();
+
+    return {
+      x: mouseEvent.clientX - dim.left,
+      y: mouseEvent.clientY - dim.top
+    }
   }
 
   startDrag = (event) => {
@@ -57,26 +86,20 @@ export default class SVGRoot extends Component {
     }
   }
 
-  overlaps(a, b, x, y) {
-    return Math.max(a, x) < Math.min(b, y);
-  }
+  stopDrag = () => {
+    const { dragging, dragRect } = this.state;
 
-  boxOverlap(a, b) {
-    return this.overlaps(a.left, a.right, b.left, b.right) &&
-      this.overlaps(a.top, a.bottom, b.top, b.bottom)
-  }
-
-  rectToBox = rect => {
-    return {
-      left: rect.x,
-      right: rect.x + rect.width,
-      top: rect.y,
-      bottom: rect.y + rect.height
-    };
-  }
-
-  stopDrag = (event) => {
-    if (this.state.dragging) {
+    if (dragging) {
+      const { selectables } = this.props;
+      const dragbox = this.rectToBox(dragRect);
+      const toSelect = selectables.map((node, index) => {
+        const ok = this.boxOverlap(dragbox,
+          getBBox(node)
+        );
+        console.warn(ok);
+        return ok;
+      });
+      console.warn(toSelect);
       // const indices = this.props.objects.map((object, index) => index);
       // const toSelect = indices.filter(index => {
       //   return this.boxOverlap(
@@ -92,15 +115,6 @@ export default class SVGRoot extends Component {
       dragInitiated: false,
       dragRect: { x: 0, y: 0, width: 0, height: 0 }
     });
-  }
-
-  computeCoordinates(mouseEvent) {
-    const dim = this.svgRef.current.getBoundingClientRect();
-
-    return {
-      x: mouseEvent.clientX - dim.left,
-      y: mouseEvent.clientY - dim.top
-    }
   }
 
   render() {

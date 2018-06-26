@@ -6,6 +6,7 @@ import SelectRect from './indicators/SelectRect';
 import Surface from './Surface';
 import HotKeyProvider from './HotKeyProvider';
 import SVGRoot from './SVGRoot';
+import { getBBox } from './Common';
 
 export default class SVGObjectRenderer extends Component {
   static propTypes = {
@@ -66,18 +67,6 @@ export default class SVGObjectRenderer extends Component {
 
     // ⚡ notify outside world of selection change. convert set to array.
     this.props.onSelectionChange(Array.from(newSelection));
-  }
-
-  /* ⚠
-    * getBBox() might have insufficient browser support!
-    * The function has little documentation. In case use of BBox turns out
-    * problematic, consider using `target.getBoundingClientRect()` along with
-    * $('<svg>').getBoundingClientRect() to correct the x and y offset.
-    */
-  getBBox = (index) => {
-    // destruct and construct;  getBBox returns a SVGRect which does not spread.
-    const { x, y, width, height } = this.objectRefs[index].current.getBBox();
-    return { x, y, width, height };
   }
 
   isSelectedType = (index) =>
@@ -151,40 +140,43 @@ export default class SVGObjectRenderer extends Component {
     }
   }
 
+  deselectAll = () => {
+    if (this.state.selectedObjects.size > 0) {
+      this.setState({
+        selectedObjects: new Set()
+      });
+
+      // ⚡ notify outside world of selection change. convert set to array.
+      this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+    }
+  }
+
   render() {
     const { width, height, objects } = this.props;
+    const dimensions = { width, height };
     const { currentlyHovering, selectedObjects } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
     const renderHover = this.shouldRenderHover(currentlyHovering);
 
     return (
-      <HotKeyProvider width={width}
+      <HotKeyProvider {...dimensions}
         setMultiSelect={multiSelect => this.setState({ multiSelect })}
       >
-        <SVGRoot width={width} height={height}>
-          <Surface deselectAll={() => {
-            if (this.state.selectedObjects.size > 0) {
-              this.setState({
-                selectedObjects: new Set()
-              });
-  
-              // ⚡ notify outside world of selection change. convert set to array.
-              this.props.onSelectionChange(Array.from(this.state.selectedObjects));
-            }
-          }}/>
+        <SVGRoot {...dimensions} selectables={this.objectRefs}>
+          <Surface deselectAll={this.deselectAll}/>
 
           {objects.map(this.renderObject)}
 
           {renderHover && (
             <HoverRect
-              {...this.getBBox(currentlyHovering)}
+              {...getBBox(this.objectRefs[currentlyHovering])}
               stopHover={this.onMouseLeave}  
             />
           )}
 
           {selectedObjectsArray.map((objectIndex, index) => (
             <SelectRect
-              {...this.getBBox(objectIndex)}
+              {...getBBox(this.objectRefs[objectIndex])}
               key={index}
               select={(event) => this.onMouseDown(objectIndex, event)}
             />
