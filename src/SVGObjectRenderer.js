@@ -50,22 +50,24 @@ export default class SVGObjectRenderer extends Component {
   onMouseLeave = () => this.setState({ isHovering: false })
 
   selectObjects = indexes => {
-    this.state.selectedObjects.clear();
-    this.setState({ selectedObjects: new Set(indexes) });
+    const newSelection = new Set(indexes);
+    this.setState({ selectedObjects: newSelection });
 
     // ⚡ notify outside world of selection change. convert set to array.
-    this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+    this.props.onSelectionChange(Array.from(newSelection));
   }
 
   onMouseDown = (index, event) => {
     event.preventDefault(); // 💡 Prevents user selecting any svg text
 
+    const newSelection = this.computeSelection(index);
+
     this.setState({
-      selectedObjects: this.computeSelection(index)
+      selectedObjects: newSelection
     });
 
     // ⚡ notify outside world of selection change. convert set to array.
-    this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+    this.props.onSelectionChange(Array.from(newSelection));
   }
 
   /* ⚠
@@ -118,6 +120,10 @@ export default class SVGObjectRenderer extends Component {
         height="100%"
         onMouseDown={(event) => {
           event.preventDefault();
+          if (this.state.selectedObjects.size === 0) {
+            return;
+          }
+
           this.setState({
             selectedObjects: new Set()
           });
@@ -196,16 +202,23 @@ export default class SVGObjectRenderer extends Component {
 
   startDrag = (event) => {
     this.setState({
-      dragging: true,
+      dragInitiated: true,
       dragOrigin: this.computeCoordinates(event)
     });
   }
 
   handleDrag = (event) => {
-    if (this.state.dragging) {
-      const { dragOrigin } = this.state;
+    const { dragInitiated, dragOrigin } = this.state;
+    let { dragging } = this.state;
+
+    if (dragInitiated && !dragging) {
+      dragging = true;
+    }
+
+    if (dragging) {
       const current = this.computeCoordinates(event);
       this.setState({
+        dragging: true,
         dragRect: {
           x: Math.min(current.x, dragOrigin.x),
           y: Math.min(current.y, dragOrigin.y),
@@ -235,18 +248,20 @@ export default class SVGObjectRenderer extends Component {
   }
 
   stopDrag = (event) => {
-    const { dragRect } = this.state;
-    const indices = this.props.objects.map((object, index) => index);
-    const toSelect = indices.filter(index => {
-      return this.boxOverlap(
-        this.rectToBox(dragRect),
-        this.rectToBox(this.getBBox(index))
-      );
-    });
-    this.selectObjects(toSelect);
+    if (this.state.dragging) {
+      const indices = this.props.objects.map((object, index) => index);
+      const toSelect = indices.filter(index => {
+        return this.boxOverlap(
+          this.rectToBox(this.state.dragRect),
+          this.rectToBox(this.getBBox(index))
+        );
+      });
+      this.selectObjects(toSelect);
+    } 
 
     this.setState({
       dragging: false,
+      dragInitiated: false,
       dragRect: { x: 0, y: 0, width: 0, height: 0 }
     });
   }
