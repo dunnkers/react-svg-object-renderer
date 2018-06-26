@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import HoverRect from './HoverRect';
 import SelectRect from './SelectRect';
 import DragRect from './DragRect';
+import Surface from './Surface';
 import HotKeyProvider from './HotKeyProvider';
 
 export default class SVGObjectRenderer extends Component {
@@ -101,29 +102,6 @@ export default class SVGObjectRenderer extends Component {
     }
 
     return true;
-  }
-
-  renderSurface = () => {
-    return (
-      <rect
-        opacity="0.0"
-        width="100%"
-        height="100%"
-        onMouseDown={(event) => {
-          event.preventDefault();
-          if (this.state.selectedObjects.size === 0) {
-            return;
-          }
-
-          this.setState({
-            selectedObjects: new Set()
-          });
-
-          // ⚡ notify outside world of selection change. convert set to array.
-          this.props.onSelectionChange(Array.from(this.state.selectedObjects));
-        }}
-      />
-    );
   }
 
   renderObject = (object, index) => {
@@ -271,7 +249,16 @@ export default class SVGObjectRenderer extends Component {
           onMouseMove={this.handleDrag}
           onMouseUp={this.stopDrag}
         >
-          {this.renderSurface()}
+          <Surface deselectAll={() => {
+            if (this.state.selectedObjects.size > 0) {
+              this.setState({
+                selectedObjects: new Set()
+              });
+  
+              // ⚡ notify outside world of selection change. convert set to array.
+              this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+            }
+          }}/>
 
           {objects.map(this.renderObject)}
 
