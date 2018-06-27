@@ -10,14 +10,15 @@ export default class TextObject extends Component {
       stroke: PropTypes.string
     }),
     text: PropTypes.string,
-    nodeRef: PropTypes.any.isRequired
+    nodeRef: PropTypes.any
   }
 
   static defaultProps = {
     x: 0,
     y: 0,
     style: {},
-    text: ''
+    text: '',
+    nodeRef: null
   }
 
   render() {

@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 
 import SVGObjectRenderer, {
-  RectObject, TextObject
+  RectObject, TextObject, CellObject
 } from 'svg-object-renderer';
 
 class App extends Component {
@@ -48,12 +48,19 @@ class App extends Component {
         fill: 'black',
         fontSize: 11
       }
+    },
+    {
+      type: 'cell',
+      x: 130,
+      y: 270,
+      value: 'a cell'
     }
   ]
 
   objectTypes = {
     rect: RectObject,
-    text: TextObject
+    text: TextObject,
+    cell: CellObject
   }
 
   render() {

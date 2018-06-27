@@ -11,7 +11,7 @@ export default class RectObject extends Component {
       fill: PropTypes.string,
       stroke: PropTypes.string
     }),
-    nodeRef: PropTypes.any.isRequired
+    nodeRef: PropTypes.any
   }
 
   static defaultProps = {
@@ -19,7 +19,8 @@ export default class RectObject extends Component {
     y: 0,
     width: 50,
     height: 50,
-    style: {}
+    style: {},
+    nodeRef: null
   }
 
   render() {
