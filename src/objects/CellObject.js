@@ -28,11 +28,6 @@ export default class CellObject extends Component {
     nodeRef: null
   }
 
-  shouldComponentUpdate = () => {
-    console.warn('k');
-    return false;
-  }
-
   render() {
     const {
       x,
