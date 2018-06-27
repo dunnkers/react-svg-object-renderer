@@ -48,8 +48,8 @@ export default class SVGObjectRenderer extends Component {
 
   onMouseLeave = () => this.setState({ isHovering: false })
 
-  selectObjects = indexes => {
-    const newSelection = new Set(indexes);
+  selectObjects = indices => {
+    const newSelection = new Set(indices);
     this.setState({ selectedObjects: newSelection });
 
     // ⚡ notify outside world of selection change. convert set to array.
@@ -142,12 +142,12 @@ export default class SVGObjectRenderer extends Component {
 
   deselectAll = () => {
     if (this.state.selectedObjects.size > 0) {
-      this.setState({
-        selectedObjects: new Set()
-      });
+      const selectedObjects = new Set();
+
+      this.setState({ selectedObjects });
 
       // ⚡ notify outside world of selection change. convert set to array.
-      this.props.onSelectionChange(Array.from(this.state.selectedObjects));
+      this.props.onSelectionChange(Array.from(selectedObjects));
     }
   }
 
@@ -162,7 +162,8 @@ export default class SVGObjectRenderer extends Component {
       <HotKeyProvider {...dimensions}
         setMultiSelect={multiSelect => this.setState({ multiSelect })}
       >
-        <SVGRoot {...dimensions} selectables={this.objectRefs}>
+        <SVGRoot {...dimensions} selectables={this.objectRefs}
+          selectIndices={indices => this.selectObjects(indices)}>
           <Surface deselectAll={this.deselectAll}/>
 
           {objects.map(this.renderObject)}

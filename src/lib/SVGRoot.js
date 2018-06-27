@@ -8,7 +8,8 @@ export default class SVGRoot extends Component {
   static propTypes = {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
-    selectables: PropTypes.arrayOf(PropTypes.object)
+    selectables: PropTypes.arrayOf(PropTypes.object),
+    selectIndices: PropTypes.func.isRequired
   }
 
   state = {
@@ -92,28 +93,27 @@ export default class SVGRoot extends Component {
     if (dragging) {
       const { selectables } = this.props;
       const dragbox = this.rectToBox(dragRect);
-      const toSelect = selectables.map((node, index) => {
-        const ok = this.boxOverlap(dragbox,
-          getBBox(node)
-        );
-        console.warn(ok);
-        return ok;
+      const toSelect = [];
+      
+      selectables.forEach((node, index) => {
+        const nodebox = getBBox(node);
+        if (this.boxOverlap(dragbox, this.rectToBox(nodebox))) {
+          toSelect.push(index);
+        }
       });
-      console.warn(toSelect);
-      // const indices = this.props.objects.map((object, index) => index);
-      // const toSelect = indices.filter(index => {
-      //   return this.boxOverlap(
-      //     this.rectToBox(this.state.dragRect),
-      //     this.rectToBox(this.getBBox(index))
-      //   );
-      // });
-      // this.selectObjects(toSelect);
+
+      this.props.selectIndices(toSelect);
     }
 
     this.setState({
       dragging: false,
       dragInitiated: false,
-      dragRect: { x: 0, y: 0, width: 0, height: 0 }
+      dragRect: {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      }
     });
   }
 
