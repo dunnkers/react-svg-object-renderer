@@ -36,6 +36,7 @@ export default class CellObject extends Component {
       style,
       nodeRef,
       value,
+      textStyle,
       ...otherProps
     } = this.props;
 
@@ -57,6 +58,7 @@ export default class CellObject extends Component {
           pointerEvents="none"
           textAnchor="middle"
           dominantBaseline="middle"
+          style={textStyle}
         />
       </g>
     );
