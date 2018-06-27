@@ -90,11 +90,11 @@ export default class SVGObjectRenderer extends Component {
     if (objects.has(index)) { // remove from selection
       objects.delete(index);
       return objects;
-    } else { // add to selection
-      // possibly, dissalow selecting another type
-      const { multipleTypeSelection } = this.props;
-      const sameType = this.isSelectedType(index) || multipleTypeSelection;
-      return sameType ? objects.add(index) : objects;
+    // add to selection only if allowed --
+    } else if (this.isSelectedType(index) || this.props.multipleTypeSelection) {
+      return objects.add(index);
+    } else {
+      return objects;
     }
   }
 
