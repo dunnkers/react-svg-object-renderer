@@ -5,6 +5,8 @@
   * $('<svg>').getBoundingClientRect() to correct the x and y offset.
   */
 export const getBBox = node => {
+    if (!node) return { x: 0, y: 0, width: 0, height: 0}; // fail soft
+
     // destruct and construct;  getBBox returns a SVGRect which does not spread.
     const { x, y, width, height } = node.current.getBBox();
     return { x, y, width, height };
