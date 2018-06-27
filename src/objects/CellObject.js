@@ -13,7 +13,7 @@ export default class CellObject extends Component {
       fill: PropTypes.string,
       stroke: PropTypes.string
     }),
-    nodeRef: PropTypes.any.isRequired
+    nodeRef: PropTypes.any
   }
 
   static defaultProps = {
@@ -24,7 +24,8 @@ export default class CellObject extends Component {
     style: {
       fill: 'white',
       stroke: 'black'
-    }
+    },
+    nodeRef: null
   }
 
   render() {
