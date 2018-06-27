@@ -2,6 +2,7 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import DragRect from './indicators/DragRect';
+import HoverRect from './indicators/HoverRect';
 import { getBBox } from './Common';
 
 export default class SVGRoot extends Component {
@@ -9,7 +10,13 @@ export default class SVGRoot extends Component {
     width: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired,
     selectables: PropTypes.arrayOf(PropTypes.object),
-    selectIndices: PropTypes.func.isRequired
+    selectIndices: PropTypes.func.isRequired,
+    stopHover: PropTypes.func.isRequired,
+    hovering: PropTypes.number
+  }
+
+  static defaultProps = {
+    hovering: -1
   }
 
   state = {
@@ -118,16 +125,8 @@ export default class SVGRoot extends Component {
   }
 
   render() {
-    const { width, height } = this.props;
+    const { width, height, hovering } = this.props;
     const { dragging, dragRect } = this.state;
-    const styles = {
-      backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5'
-        + 'vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0'
-        + 'PSIyMCIgZmlsbD0iI2ZmZiI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9I'
-        + 'iNGN0Y3RjciPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIG'
-        + 'ZpbGw9IiNGN0Y3RjciPjwvcmVjdD4KPC9zdmc+)',
-      backgroundSize: 'auto'
-    };
 
     return (
       <svg
@@ -140,8 +139,25 @@ export default class SVGRoot extends Component {
         onMouseUp={this.stopDrag}
       >
         {this.props.children}
+
+        {!dragging && hovering !== -1 && (
+          <HoverRect
+            {...getBBox(this.props.selectables[hovering])}
+            stopHover={this.props.stopHover}
+          />
+        )}
+        
         {dragging && <DragRect {...dragRect} />}
       </svg>
     );
   }
 }
+
+export const styles = {
+  backgroundImage: 'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5'
+    + 'vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0'
+    + 'PSIyMCIgZmlsbD0iI2ZmZiI+PC9yZWN0Pgo8cmVjdCB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIGZpbGw9I'
+    + 'iNGN0Y3RjciPjwvcmVjdD4KPHJlY3QgeD0iMTAiIHk9IjEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIG'
+    + 'ZpbGw9IiNGN0Y3RjciPjwvcmVjdD4KPC9zdmc+)',
+  backgroundSize: 'auto'
+};

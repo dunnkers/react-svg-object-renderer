@@ -1,7 +1,6 @@
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
-import HoverRect from './indicators/HoverRect';
 import SelectRect from './indicators/SelectRect';
 import Surface from './Surface';
 import HotKeyProvider from './HotKeyProvider';
@@ -30,8 +29,7 @@ export default class SVGObjectRenderer extends Component {
   }
 
   state = {
-    isHovering: false,
-    currentlyHovering: null,
+    hovering: -1,
     selectedObjects: new Set(),
     multiSelect: false,
     selectedType: null
@@ -42,11 +40,11 @@ export default class SVGObjectRenderer extends Component {
     this.objectRefs = Object.entries(props.objects).map(() => createRef());
   }
 
-  onMouseOver = (index) => {
-    this.setState({ isHovering: true, currentlyHovering: index });
+  startHovering = (index) => {
+    this.setState({ hovering: index });
   }
 
-  onMouseLeave = () => this.setState({ isHovering: false })
+  stopHovering = () => this.setState({ hovering: -1 })
 
   selectObjects = indices => {
     const newSelection = new Set(indices);
@@ -56,7 +54,7 @@ export default class SVGObjectRenderer extends Component {
     this.props.onSelectionChange(Array.from(newSelection));
   }
 
-  onMouseDown = (index, event) => {
+  clickSelect = (index, event) => {
     event.preventDefault(); // 💡 Prevents user selecting any svg text
 
     const newSelection = this.computeSelection(index);
@@ -72,23 +70,6 @@ export default class SVGObjectRenderer extends Component {
   isSelectedType = (index) =>
     this.props.objects[index].type === this.state.selectedType;
 
-  shouldRenderHover = (index) => {
-    const { isHovering, selectedObjects, multiSelect } = this.state;
-    const { multipleTypeSelection } = this.props;
-
-    // don't render when object already selected
-    if (!isHovering || selectedObjects.has(index)) {
-      return false;
-    }
-    
-    // don't render when selecting objects of same type
-    if (selectedObjects.size > 0 && multiSelect) {
-      return this.isSelectedType(index) || multipleTypeSelection;
-    }
-
-    return true;
-  }
-
   renderObject = (object, index) => {
     const { objectTypes } = this.props;
     const ObjectComponent = objectTypes[object.type];
@@ -98,9 +79,9 @@ export default class SVGObjectRenderer extends Component {
         {...object}
         key={index}
         nodeRef={this.objectRefs[index]}
-        onMouseOver={() => this.onMouseOver(index)}
-        onMouseDown={event => this.onMouseDown(index, event)}
-        onMouseLeave={this.onMouseLeave}
+        onMouseOver={() => this.startHovering(index)}
+        onMouseDown={event => this.clickSelect(index, event)}
+        onMouseLeave={this.stopHovering}
       />
     );
   }
@@ -151,35 +132,49 @@ export default class SVGObjectRenderer extends Component {
     }
   }
 
+  computeHoverState = () => {
+    const { selectedObjects, multiSelect, hovering } = this.state;
+    const { multipleTypeSelection } = this.props;
+
+    // don't render when object already selected
+    if (hovering === -1 || selectedObjects.has(hovering)) {
+      return -1;
+    }
+
+    // don't render when selecting objects of same type
+    if (selectedObjects.size > 0 && multiSelect) {
+      return (this.isSelectedType(hovering) || multipleTypeSelection) ?
+        hovering : -1;
+    }
+
+    return hovering;
+  }
+
   render() {
     const { width, height, objects } = this.props;
     const dimensions = { width, height };
-    const { currentlyHovering, selectedObjects } = this.state;
+    const { selectedObjects } = this.state;
     const selectedObjectsArray = [...selectedObjects]; // Convert Set to Array
-    const renderHover = this.shouldRenderHover(currentlyHovering);
 
     return (
       <HotKeyProvider {...dimensions}
         setMultiSelect={multiSelect => this.setState({ multiSelect })}
       >
-        <SVGRoot {...dimensions} selectables={this.objectRefs}
-          selectIndices={indices => this.selectObjects(indices)}>
+        <SVGRoot {...dimensions}
+          selectables={this.objectRefs}
+          selectIndices={indices => this.selectObjects(indices)}
+          hovering={this.computeHoverState()}
+          stopHover={this.stopHovering}
+        >
           <Surface deselectAll={this.deselectAll}/>
 
           {objects.map(this.renderObject)}
-
-          {renderHover && (
-            <HoverRect
-              {...getBBox(this.objectRefs[currentlyHovering])}
-              stopHover={this.onMouseLeave}  
-            />
-          )}
 
           {selectedObjectsArray.map((objectIndex, index) => (
             <SelectRect
               {...getBBox(this.objectRefs[objectIndex])}
               key={index}
-              select={(event) => this.onMouseDown(objectIndex, event)}
+              select={(event) => this.clickSelect(objectIndex, event)}
             />
           ))}
         </SVGRoot>
