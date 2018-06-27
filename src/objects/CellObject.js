@@ -19,8 +19,8 @@ export default class CellObject extends Component {
   static defaultProps = {
     x: 0,
     y: 0,
-    width: 100,
-    height: 100,
+    width: 50,
+    height: 50,
     style: {
       fill: 'white',
       stroke: 'black'
