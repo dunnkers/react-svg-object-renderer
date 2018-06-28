@@ -43,7 +43,7 @@ export default class RectObject extends Component {
    */
   getStyle() {
     const DEFAULTS = RectObject.defaultProps.style;
-    return Object.assign({}, this.props.style || {}, DEFAULTS);
+    return Object.assign({}, DEFAULTS, this.props.style || {});
   }
 
   render() {

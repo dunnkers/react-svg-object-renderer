@@ -33,7 +33,7 @@ export default class CellObject extends Component {
    */
   getStyle() {
     const DEFAULTS = RectObject.defaultProps.style;
-    return Object.assign({}, this.props.style || {}, DEFAULTS);
+    return Object.assign({}, DEFAULTS, this.props.style || {});
   }
 
   shouldComponentUpdate = (nextProps) => {
