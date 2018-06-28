@@ -28,6 +28,14 @@ export default class CellObject extends Component {
     nodeRef: null
   }
 
+  /**
+   * Getter to ensure nested defaults are attached to object
+   */
+  getStyle() {
+    const DEFAULTS = RectObject.defaultProps.style;
+    return Object.assign({}, this.props.style || {}, DEFAULTS);
+  }
+
   shouldComponentUpdate = (nextProps) => {
     const equal = Object.entries(nextProps).every(([key, value]) => {
       if (value instanceof Function) {
@@ -60,7 +68,7 @@ export default class CellObject extends Component {
           y={y}
           width={width}
           height={height}
-          style={style}
+          style={this.getStyle()}
           nodeRef={nodeRef}
           {...otherProps}
         />

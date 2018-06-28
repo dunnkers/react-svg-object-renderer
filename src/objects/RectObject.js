@@ -19,7 +19,10 @@ export default class RectObject extends Component {
     y: 0,
     width: 50,
     height: 50,
-    style: {},
+    style: {
+      fill: 'white',
+      stroke: 'black'
+    },
     nodeRef: null
   }
 
@@ -35,16 +38,24 @@ export default class RectObject extends Component {
     return !equal; // only update if a prop actually changed
   }
 
+  /**
+   * Getter to ensure nested defaults are attached to object
+   */
+  getStyle() {
+    const DEFAULTS = RectObject.defaultProps.style;
+    return Object.assign({}, this.props.style || {}, DEFAULTS);
+  }
+
   render() {
     const {
       x,
       y,
       width,
       height,
-      style,
       nodeRef,
       ...otherProps
     } = this.props;
+    delete otherProps.type; // don't attach type as attribute
 
     return (
       <rect
@@ -52,7 +63,7 @@ export default class RectObject extends Component {
         y={y}
         width={width}
         height={height}
-        style={style}
+        style={this.getStyle()}
         ref={nodeRef}
         {...otherProps}
       />

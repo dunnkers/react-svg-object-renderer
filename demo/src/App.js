@@ -13,11 +13,7 @@ class App extends Component {
       x: 50,
       y: 50,
       width: 200,
-      height: 200,
-      style: {
-        fill: 'white',
-        stroke: 'black'
-      }
+      height: 200
     },
     {
       type: 'rect',
