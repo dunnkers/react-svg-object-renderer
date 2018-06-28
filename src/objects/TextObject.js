@@ -21,6 +21,18 @@ export default class TextObject extends Component {
     nodeRef: null
   }
 
+  shouldComponentUpdate = (nextProps) => {
+    const equal = Object.entries(nextProps).every(([key, value]) => {
+      if (value instanceof Function) {
+        return true; // we won't change functions
+      }
+
+      return this.props[key] === value;
+    })
+
+    return !equal; // only update if a prop actually changed
+  }
+
   render() {
     const {
       style,
