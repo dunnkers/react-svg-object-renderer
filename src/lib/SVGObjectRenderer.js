@@ -170,6 +170,8 @@ export default class SVGObjectRenderer extends Component {
 
           {objects.map(this.renderObject)}
 
+          {this.props.children}
+
           {selectedObjectsArray.map((objectIndex, index) => (
             <SelectRect
               {...getBBox(this.objectRefs[objectIndex])}
