@@ -9,6 +9,8 @@ import { getBBox } from './Common';
 
 export default class SVGObjectRenderer extends Component {
   static propTypes = {
+    x: PropTypes.number,
+    y: PropTypes.number,
     width: PropTypes.number,
     height: PropTypes.number,
     objects: PropTypes.arrayOf(PropTypes.shape({
@@ -21,6 +23,8 @@ export default class SVGObjectRenderer extends Component {
   }
 
   static defaultProps = {
+    x: 0,
+    y: 0,
     width: 400,
     height: 400,
     objects: [],
@@ -73,12 +77,15 @@ export default class SVGObjectRenderer extends Component {
     this.props.objects[index].type === this.state.selectedType;
 
   renderObject = (object, index) => {
+    const { x, y, ...otherObjectProps } = object;
     const { objectTypes } = this.props;
     const ObjectComponent = objectTypes[object.type];
 
     return (
       <ObjectComponent
-        {...object}
+        x={x + this.props.x}
+        y={y + this.props.y}
+        {...otherObjectProps}
         key={index}
         nodeRef={this.objectRefs[index]}
         onMouseOver={() => this.startHovering(index)}

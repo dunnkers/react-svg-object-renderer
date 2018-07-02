@@ -99,6 +99,8 @@ This renders:
 
 ![Example](docs/canvas-example.png)
 
+ℹ Note that in any object you create, coordinates must be top-level properties.
+
 ## Options
 
 *multipleTypeSelection*
