@@ -16,7 +16,8 @@ export default class SVGObjectRenderer extends Component {
     })),
     objectTypes: PropTypes.objectOf(PropTypes.func),
     onSelectionChange: PropTypes.func,
-    multipleTypeSelection: PropTypes.bool
+    multipleTypeSelection: PropTypes.bool,
+    children: PropTypes.node
   }
 
   static defaultProps = {
@@ -32,7 +33,8 @@ export default class SVGObjectRenderer extends Component {
     hovering: -1,
     selectedObjects: new Set(),
     multiSelect: false,
-    selectedType: null
+    selectedType: null,
+    children: null
   }
 
   constructor(props) {

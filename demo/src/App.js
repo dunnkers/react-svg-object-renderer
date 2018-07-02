@@ -64,14 +64,16 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">svg-editable-canvas</h1>
+          <h1 className="App-title">svg-object-renderer</h1>
         </header>
         <div className="App-intro">
           <SVGObjectRenderer
             objects={this.objects}
             objectTypes={this.objectTypes}
             onSelectionChange={(selected) => console.warn('onSelectionChange', selected)}
-          />
+          >
+            <text x={15} y={30}>unselectable text</text>
+          </SVGObjectRenderer>
         </div>
       </div>
     );
