@@ -118,12 +118,12 @@ Allows selecting objects of different types. Default behaviour is disallowing se
 
 In one terminal build the library files:
 ```bash
-yarn watch
+yarn && yarn watch
 ```
 
-Launch the demo app in another terminal:
+Now, launch the demo app in another terminal:
 ```bash
-cd demo && yarn start
+cd demo && yarn && yarn start
 ```
 
 ⚡
