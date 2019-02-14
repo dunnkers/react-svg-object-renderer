@@ -9,8 +9,10 @@
 ## Install
 
 ```bash
-yarn add http://git.offthegrid/Jeroen/svg-object-renderer.git
+yarn add https://github.com/dunnkers/react-svg-object-renderer.git
 ```
+
+(will register on npm later.)
 
 ## Features
 
